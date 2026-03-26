@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+
+            font-family: Arial, sans-serif;
+            background-color: #f8b4b4; /* LIGHT RED */
+        }
+        h1 {
+            margin: 10px 0;
+            font-size: 28px;
+            color: #333;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 90px);
+            gap: 10px;
+        }
+        .cell {
+            width: 90px;
+            height: 90px;
+            font-size: 32px;
+            font-weight: bold;
+            border-radius: 12px;
+            border: none;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        .cell:hover {
+            background: #f1f1f1;
+        }
+        .x {
+            color: #d32f2f;
+        }
+        .o {
+            color: #1976d2;
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+        }
+        button {
+            margin-top: 15px;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #e53935;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #c62828;
+        }
+        .winner {
+            background: #a5d6a7 !important;
+        }
+    </style>
+</head>
+<body>
+<h1>Tic Tac Toe</h1>
+<div class="board" id="board"></div>
+<h2 id="status"></h2>
+<button onclick="resetGame()">Restart</button>
+<script>
+let board = ["", "", "", "", "", "", "", "", ""];
+let player = "X";
+let gameOver = false;
+const boardDiv = document.getElementById("board");
+function createBoard() {
+    board.forEach((_, i) => {
+        let btn = document.createElement("button");
+        btn.className = "cell";
+        btn.dataset.index = i;
+        btn.onclick = handleClick;
+        boardDiv.appendChild(btn);
+    });
+}
+function handleClick(e) {
+    if (gameOver) return;
+    const i = e.target.dataset.index;
+    if (board[i] !== "") return;
+    board[i] = player;
+    e.target.innerText = player;
+    if (player === "X") {
+        e.target.classList.add("x");
+    } else {
+        e.target.classList.add("o");
+    }
+    if (checkWinner()) {
+        document.getElementById("status").innerText = player + " Wins!";
+        gameOver = true;
+        return;
+    }
+    if (!board.includes("")) {
+        document.getElementById("status").innerText = "Draw!";
+        gameOver = true;
+        return;
+    }
+    player = player === "X" ? "O" : "X";
+}
+function checkWinner() {
+    const win = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+    const cells = document.querySelectorAll(".cell");
+    for (let combo of win) {
+        let [a,b,c] = combo;
+        if (board[a] &&
+            board[a] === board[b] &&
+            board[a] === board[c]) {
+            cells[a].classList.add("winner");
+            cells[b].classList.add("winner");
+            cells[c].classList.add("winner");
+            return true;
+        }
+    }
+    return false;
+}
+function resetGame() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    player = "X";
+    gameOver = false;
+    document.getElementById("status").innerText = "";
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+        cell.innerText = "";
+        cell.classList.remove("winner", "x", "o");
+    });
+}
+createBoard();
+</script>
+</body>
+</html>
